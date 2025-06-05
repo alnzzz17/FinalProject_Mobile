@@ -21,6 +21,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: const Key('register-screen'),
       backgroundColor: Colors.black,
       body: SingleChildScrollView(
         child: Padding(
@@ -31,12 +32,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
               // Logo
               Image.asset(
                 'assets/images/logo.png',
+                key: const Key('register-logo'),
                 height: 120,
                 fit: BoxFit.contain,
               ),
               SizedBox(height: 20),
               Text(
                 'CREATE ACCOUNT',
+                key: const Key('register-title'),
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 24,
@@ -49,6 +52,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 child: Column(
                   children: [
                     _buildTextField(
+                      key: const Key('username-field'),
                       controller: _usernameController,
                       label: 'Username',
                       validator: (value) {
@@ -60,6 +64,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                     SizedBox(height: 16),
                     _buildTextField(
+                      key: const Key('fullname-field'),
                       controller: _fullnameController,
                       label: 'Fullname',
                       validator: (value) {
@@ -71,6 +76,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                     SizedBox(height: 16),
                     _buildPasswordField(
+                      key: const Key('password-field'),
                       controller: _passwordController,
                       label: 'Password',
                       obscureText: !_showPassword,
@@ -92,6 +98,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                     SizedBox(height: 16),
                     _buildPasswordField(
+                      key: const Key('confirm-password-field'),
                       controller: _confirmPasswordController,
                       label: 'Confirm Password',
                       obscureText: !_showConfirmPassword,
@@ -110,10 +117,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                     SizedBox(height: 30),
                     _isLoading
-                        ? CircularProgressIndicator(color: Colors.red)
+                        ? CircularProgressIndicator(
+                            key: const Key('register-loading'),
+                            color: Colors.red)
                         : SizedBox(
                             width: double.infinity,
                             child: ElevatedButton(
+                              key: const Key('register-button'),
                               onPressed: _register,
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.red,
@@ -131,6 +141,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           ),
                     SizedBox(height: 20),
                     TextButton(
+                      key: const Key('login-button'),
                       onPressed: () {
                         Get.offAllNamed('/login');
                       },
@@ -153,12 +164,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   Widget _buildTextField({
+    Key? key,
     required TextEditingController controller,
     required String label,
     bool obscureText = false,
     required String? Function(String?) validator,
   }) {
     return TextFormField(
+      key: key,
       controller: controller,
       obscureText: obscureText,
       style: TextStyle(color: Colors.white),
@@ -182,12 +195,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
           borderSide: BorderSide(color: Colors.red),
           borderRadius: BorderRadius.circular(8),
         ),
+        filled: true,
+        fillColor: Colors.grey[900],
       ),
       validator: validator,
     );
   }
 
   Widget _buildPasswordField({
+    Key? key,
     required TextEditingController controller,
     required String label,
     required bool obscureText,
@@ -196,6 +212,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     required bool showPassword,
   }) {
     return TextFormField(
+      key: key,
       controller: controller,
       obscureText: obscureText,
       style: TextStyle(color: Colors.white),
@@ -220,12 +237,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
           borderRadius: BorderRadius.circular(8),
         ),
         suffixIcon: IconButton(
+          key: const Key('password-visibility-button'),
           icon: Icon(
             showPassword ? Icons.visibility_off : Icons.visibility,
             color: Colors.white70,
           ),
           onPressed: toggleVisibility,
         ),
+        filled: true,
+        fillColor: Colors.grey[900],
       ),
       validator: validator,
     );
