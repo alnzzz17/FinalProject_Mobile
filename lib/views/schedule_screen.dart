@@ -104,7 +104,6 @@ class ScheduleScreenState extends State<ScheduleScreen> {
   bool _isEditing = false;
   Schedule? _editingSchedule;
 
-  // Method for starting edit
   void _startEdit(Schedule schedule) {
     setState(() {
       _isEditing = true;
@@ -116,7 +115,6 @@ class ScheduleScreenState extends State<ScheduleScreen> {
     });
   }
 
-  // Method for canceling edit
   void _cancelEdit() {
     setState(() {
       _isEditing = false;
@@ -128,7 +126,6 @@ class ScheduleScreenState extends State<ScheduleScreen> {
     });
   }
 
-  // Method for saving or updating schedule
   Future<void> _saveOrUpdateSchedule() async {
     if (!_formKey.currentState!.validate()) return;
     if (_selectedCircuitId == null ||
@@ -139,7 +136,6 @@ class ScheduleScreenState extends State<ScheduleScreen> {
         'Please fill all fields',
         backgroundColor: Colors.red,
         colorText: Colors.white,
-        
       );
       return;
     }
@@ -215,8 +211,10 @@ class ScheduleScreenState extends State<ScheduleScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: const Key('schedule_screen'),
       backgroundColor: Colors.black,
       appBar: AppBar(
+        key: const Key('schedule_app_bar'),
         backgroundColor: Colors.black,
         elevation: 0,
         title: const Text(
@@ -231,10 +229,12 @@ class ScheduleScreenState extends State<ScheduleScreen> {
       body: _isLoading && _schedules.isEmpty
           ? const Center(
               child: CircularProgressIndicator(
+                key: Key('loading_indicator'),
                 color: Colors.red,
               ),
             )
           : SingleChildScrollView(
+              key: const Key('schedule_scroll_view'),
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -250,6 +250,7 @@ class ScheduleScreenState extends State<ScheduleScreen> {
 
   Widget _buildForm(BuildContext context) {
     return Card(
+      key: const Key('schedule_form_card'),
       color: Colors.grey[900],
       elevation: 4,
       shape: RoundedRectangleBorder(
@@ -263,6 +264,7 @@ class ScheduleScreenState extends State<ScheduleScreen> {
             children: [
               Text(
                 _isEditing ? 'Edit Schedule' : 'Add Schedule',
+                key: const Key('form_title'),
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -271,6 +273,7 @@ class ScheduleScreenState extends State<ScheduleScreen> {
               ),
               const SizedBox(height: 16),
               TextFormField(
+                key: const Key('name_input'),
                 controller: _nameController,
                 style: const TextStyle(color: Colors.white),
                 cursorColor: Colors.white,
@@ -301,6 +304,7 @@ class ScheduleScreenState extends State<ScheduleScreen> {
               ),
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
+                key: const Key('circuit_dropdown'),
                 isExpanded: true,
                 value: _selectedCircuitId,
                 dropdownColor: Colors.grey[900],
@@ -326,6 +330,7 @@ class ScheduleScreenState extends State<ScheduleScreen> {
                 ),
                 items: _presenter.getCircuits().map((circuit) {
                   return DropdownMenuItem<String>(
+                    key: Key('circuit_${circuit.id}'),
                     value: circuit.id,
                     child: Row(
                       children: [
@@ -356,6 +361,7 @@ class ScheduleScreenState extends State<ScheduleScreen> {
               ),
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
+                key: const Key('type_dropdown'),
                 value: _selectedType,
                 dropdownColor: Colors.grey[900],
                 style: const TextStyle(color: Colors.white),
@@ -379,6 +385,7 @@ class ScheduleScreenState extends State<ScheduleScreen> {
                 ),
                 items: _presenter.getScheduleTypes().map((type) {
                   return DropdownMenuItem<String>(
+                    key: Key('type_$type'),
                     value: type,
                     child: Text(
                       type,
@@ -400,6 +407,7 @@ class ScheduleScreenState extends State<ScheduleScreen> {
               ),
               const SizedBox(height: 16),
               TextFormField(
+                key: const Key('date_time_input'),
                 readOnly: true,
                 controller: TextEditingController(
                   text: _selectedDateTime != null
@@ -432,6 +440,7 @@ class ScheduleScreenState extends State<ScheduleScreen> {
               ),
               const SizedBox(height: 16),
               ElevatedButton(
+                key: const Key('save_button'),
                 onPressed: _saveOrUpdateSchedule,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.red,
@@ -448,6 +457,7 @@ class ScheduleScreenState extends State<ScheduleScreen> {
               ),
               if (_isEditing)
                 TextButton(
+                  key: const Key('cancel_button'),
                   onPressed: _cancelEdit,
                   child: const Text(
                     'Cancel',
@@ -463,10 +473,12 @@ class ScheduleScreenState extends State<ScheduleScreen> {
 
   Widget _buildScheduleList() {
     return Column(
+      key: const Key('schedule_list'),
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text(
           'Saved Schedules',
+          key: Key('saved_schedules_title'),
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
@@ -475,8 +487,14 @@ class ScheduleScreenState extends State<ScheduleScreen> {
         ),
         const SizedBox(height: 8),
         _schedules.isEmpty
-            ? const Center(child: Text('No schedules saved yet'))
+            ? const Center(
+                child: Text(
+                  'No schedules saved yet',
+                  key: Key('empty_schedules_text'),
+                ),
+              )
             : ListView.builder(
+                key: const Key('schedules_list_view'),
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
                 itemCount: _schedules.length,
@@ -485,12 +503,14 @@ class ScheduleScreenState extends State<ScheduleScreen> {
                   final circuit = _presenter.getCircuitById(schedule.circuitId);
 
                   return Card(
+                    key: Key('schedule_card_${schedule.id}'),
                     color: Colors.grey[900],
                     margin: const EdgeInsets.symmetric(vertical: 4),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: ListTile(
+                      key: Key('schedule_item_${schedule.id}'),
                       title: Text(
                         schedule.name,
                         style: const TextStyle(color: Colors.white),
@@ -513,10 +533,12 @@ class ScheduleScreenState extends State<ScheduleScreen> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           IconButton(
+                            key: Key('edit_button_${schedule.id}'),
                             icon: const Icon(Icons.edit, color: Colors.white),
                             onPressed: () => _startEdit(schedule),
                           ),
                           IconButton(
+                            key: Key('delete_button_${schedule.id}'),
                             icon: const Icon(Icons.delete, color: Colors.red),
                             onPressed: () => _deleteSchedule(schedule.id),
                           ),
