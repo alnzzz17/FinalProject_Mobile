@@ -4,6 +4,10 @@ import 'package:tpm_fp/models/user_model.dart';
 import 'package:tpm_fp/presenters/profile_presenter.dart';
 
 class ProfileScreen extends StatefulWidget {
+  final VoidCallback? onProfileUpdated;
+
+  const ProfileScreen({Key? key, this.onProfileUpdated}) : super(key: key);
+
   @override
   _ProfileScreenState createState() => _ProfileScreenState();
 }
@@ -11,12 +15,10 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   final ProfilePresenter _presenter = ProfilePresenter();
   final _formKey = GlobalKey<FormState>();
-
   late TextEditingController _usernameController;
   late TextEditingController _fullnameController;
   late TextEditingController _passwordController;
   late TextEditingController _confirmPasswordController;
-
   UserModel? _currentUser;
   bool _isLoading = true;
   bool _isEditing = false;
@@ -96,14 +98,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
       }
 
       setState(() => _isLoading = true);
-
       final success = await _presenter.updateProfile(
         currentUsername: _currentUser?.username ?? '',
         newUsername: _usernameController.text,
         newFullname: _fullnameController.text,
         newPassword: _showPasswordFields ? _passwordController.text : null,
       );
-
       setState(() => _isLoading = false);
 
       if (success) {
@@ -117,6 +117,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
         );
         await _loadUserData();
         setState(() => _isEditing = false);
+        if (widget.onProfileUpdated != null) {
+          widget.onProfileUpdated!();
+        }
       } else {
         Get.snackbar(
           'Error',

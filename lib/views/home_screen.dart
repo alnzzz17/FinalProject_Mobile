@@ -16,15 +16,17 @@ class _HomeScreenState extends State<HomeScreen> {
   final AuthService _authService = AuthService();
   UserModel? _currentUser;
   int _currentIndex = 0;
-  List<Widget> _screens = [
-    _MainMenuContent(),
-    ProfileScreen(),
-  ];
+  List<Widget> _screens = [];
 
   @override
   void initState() {
     super.initState();
     _loadCurrentUser();
+    _screens = [
+      _MainMenuContent(),
+      ProfileScreen(onProfileUpdated: _loadCurrentUser),
+      FeedbackScreen(currentUser: _currentUser),
+    ];
   }
 
   Future<void> _loadCurrentUser() async {
@@ -33,7 +35,7 @@ class _HomeScreenState extends State<HomeScreen> {
       _currentUser = user;
       _screens = [
         _MainMenuContent(),
-        ProfileScreen(),
+        ProfileScreen(onProfileUpdated: _loadCurrentUser),
         FeedbackScreen(currentUser: _currentUser),
       ];
     });
@@ -114,7 +116,7 @@ class _HomeScreenState extends State<HomeScreen> {
 }
 
 class _MainMenuContent extends StatelessWidget {
-@override
+  @override
   Widget build(BuildContext context) {
     return GridView.count(
       shrinkWrap: true,
@@ -132,7 +134,7 @@ class _MainMenuContent extends StatelessWidget {
         _buildMenuCard(
           context: context,
           icon: Icons.attach_money,
-          title: 'Currency  Converter',
+          title: 'Currency Converter',
           onTap: () => Get.toNamed('/currency'),
         ),
         _buildMenuCard(
