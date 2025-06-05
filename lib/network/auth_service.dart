@@ -9,6 +9,10 @@ class AuthService {
   static const String _userBoxName = 'users';
   final SharedPrefs _sharedPrefs = SharedPrefs();
 
+  final bool disableToast; // 👈 Tambahkan ini
+
+  AuthService({this.disableToast = false}); // 👈 Update konstruktor
+
   Future<void> init() async {
     await Hive.openBox<UserModel>(_userBoxName);
   }
@@ -31,7 +35,9 @@ class AuthService {
       for (var i = 0; i < userBox.length; i++) {
         final user = userBox.getAt(i);
         if (user?.username == username) {
-          Fluttertoast.showToast(msg: 'Username already registered');
+          if (!disableToast) {
+            Fluttertoast.showToast(msg: 'Username already registered');
+          }
           return false;
         }
       }
@@ -46,7 +52,9 @@ class AuthService {
       await userBox.add(newUser);
       return true;
     } catch (e) {
-      Fluttertoast.showToast(msg: 'Registration failed: $e');
+      if (!disableToast) {
+        Fluttertoast.showToast(msg: 'Registration failed: $e');
+      }
       return false;
     }
   }
@@ -68,10 +76,14 @@ class AuthService {
         }
       }
 
-      Fluttertoast.showToast(msg: 'Invalid username or password');
+      if (!disableToast) {
+        Fluttertoast.showToast(msg: 'Invalid username or password');
+      }
       return null;
     } catch (e) {
-      Fluttertoast.showToast(msg: 'Login failed: $e');
+      if (!disableToast) {
+        Fluttertoast.showToast(msg: 'Login failed: $e');
+      }
       return null;
     }
   }
@@ -117,7 +129,9 @@ class AuthService {
       }
 
       if (userIndex == null || userToUpdate == null) {
-        Fluttertoast.showToast(msg: 'User not found');
+        if (!disableToast) {
+          Fluttertoast.showToast(msg: 'User not found');
+        }
         return false;
       }
 
@@ -127,7 +141,12 @@ class AuthService {
           if (i == userIndex) continue;
           final user = userBox.getAt(i);
           if (user?.username == newUsername) {
-            Fluttertoast.showToast(msg: 'Username already taken');
+            if (user?.username == username) {
+              if (!disableToast) {
+                Fluttertoast.showToast(msg: 'Username already registered');
+              }
+              return false;
+            }
             return false;
           }
         }
@@ -152,7 +171,9 @@ class AuthService {
 
       return true;
     } catch (e) {
-      Fluttertoast.showToast(msg: 'Update failed: $e');
+      if (!disableToast) {
+        Fluttertoast.showToast(msg: 'Update failed: $e');
+      }
       return false;
     }
   }
