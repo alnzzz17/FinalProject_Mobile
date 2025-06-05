@@ -14,11 +14,11 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _passwordController = TextEditingController();
   bool _isLoading = false;
   bool _showPassword = false;
-  
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: const Key('login-screen'), // Key untuk scaffold
       backgroundColor: Colors.black,
       body: SingleChildScrollView(
         child: Padding(
@@ -26,15 +26,17 @@ class _LoginScreenState extends State<LoginScreen> {
           child: Column(
             children: [
               SizedBox(height: 40),
-              // Logo
+              // Logo dengan key
               Image.asset(
                 'assets/images/logo.png',
+                key: const Key('login-logo'),
                 height: 120,
                 fit: BoxFit.contain,
               ),
               SizedBox(height: 20),
               Text(
                 'LOGIN',
+                key: const Key('login-title'),
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 24,
@@ -47,6 +49,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: Column(
                   children: [
                     _buildTextField(
+                      key: const Key('username-field'),
                       controller: _usernameController,
                       label: 'Username',
                       validator: (value) {
@@ -58,6 +61,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     SizedBox(height: 16),
                     _buildPasswordField(
+                      key: const Key('password-field'),
                       controller: _passwordController,
                       label: 'Password',
                       obscureText: !_showPassword,
@@ -76,10 +80,13 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     SizedBox(height: 30),
                     _isLoading
-                        ? CircularProgressIndicator(color: Colors.red)
+                        ? CircularProgressIndicator(
+                            key: const Key('login-loading'),
+                            color: Colors.red)
                         : SizedBox(
                             width: double.infinity,
                             child: ElevatedButton(
+                              key: const Key('login-button'),
                               onPressed: _login,
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.red,
@@ -97,6 +104,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                     SizedBox(height: 20),
                     TextButton(
+                      key: const Key('register-button'),
                       onPressed: () {
                         Get.offAllNamed('/register');
                       },
@@ -119,12 +127,14 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Widget _buildTextField({
+    Key? key,
     required TextEditingController controller,
     required String label,
     bool obscureText = false,
     required String? Function(String?) validator,
   }) {
     return TextFormField(
+      key: key,
       controller: controller,
       obscureText: obscureText,
       style: TextStyle(color: Colors.white),
@@ -156,6 +166,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Widget _buildPasswordField({
+    Key? key,
     required TextEditingController controller,
     required String label,
     required bool obscureText,
@@ -164,6 +175,7 @@ class _LoginScreenState extends State<LoginScreen> {
     required bool showPassword,
   }) {
     return TextFormField(
+      key: key,
       controller: controller,
       obscureText: obscureText,
       style: TextStyle(color: Colors.white),
@@ -188,6 +200,7 @@ class _LoginScreenState extends State<LoginScreen> {
           borderRadius: BorderRadius.circular(8),
         ),
         suffixIcon: IconButton(
+          key: const Key('password-visibility-button'),
           icon: Icon(
             showPassword ? Icons.visibility_off : Icons.visibility,
             color: Colors.white70,
@@ -216,7 +229,6 @@ class _LoginScreenState extends State<LoginScreen> {
           'Login successful',
           backgroundColor: Colors.green,
           colorText: Colors.white,
-          
         );
         await Future.delayed(Duration(milliseconds: 1000));
         Get.offAllNamed('/home');
@@ -226,7 +238,6 @@ class _LoginScreenState extends State<LoginScreen> {
           'Invalid username or password',
           backgroundColor: Colors.red,
           colorText: Colors.white,
-          
         );
       }
     }
