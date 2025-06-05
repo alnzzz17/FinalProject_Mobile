@@ -13,7 +13,8 @@ class TimeConverterScreen extends StatefulWidget {
 
 class TimeConverterScreenState extends State<TimeConverterScreen> {
   final TimeConverterPresenter _presenter = TimeConverterPresenter();
-  final TextEditingController _timezoneSearchController = TextEditingController();
+  final TextEditingController _timezoneSearchController =
+      TextEditingController();
   Circuit? _selectedFromCircuit;
   Timezone? _selectedToTimezone;
   DateTime? _selectedDateTime;
@@ -173,9 +174,9 @@ class TimeConverterScreenState extends State<TimeConverterScreen> {
             decoration: BoxDecoration(
               color: Colors.grey[800],
               border: Border.all(
-                color: _selectedToTimezone != null 
-                    ? Colors.red // Red border when selected
-                    : Colors.white70, // Default border
+                color: _selectedToTimezone != null
+                    ? Colors.red
+                    : Colors.white70,
               ),
               borderRadius: BorderRadius.circular(8),
             ),
@@ -208,8 +209,11 @@ class TimeConverterScreenState extends State<TimeConverterScreen> {
           builder: (context, setStateDialog) {
             void filter(String query) {
               setStateDialog(() {
-                filtered = _presenter.timezones.where((tz) =>
-                    tz.displayName.toLowerCase().contains(query.toLowerCase())).toList();
+                filtered = _presenter.timezones
+                    .where((tz) => tz.displayName
+                        .toLowerCase()
+                        .contains(query.toLowerCase()))
+                    .toList();
               });
             }
 
@@ -223,58 +227,69 @@ class TimeConverterScreenState extends State<TimeConverterScreen> {
                   'Select Timezone',
                   style: TextStyle(color: Colors.white),
                 ),
-                content: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    TextField(
-                      controller: searchController,
-                      style: const TextStyle(color: Colors.white),
-                      decoration: InputDecoration(
-                        hintText: 'Search timezone...',
-                        hintStyle: const TextStyle(color: Colors.white70),
-                        prefixIcon: const Icon(Icons.search, color: Colors.white70),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: const BorderSide(color: Colors.white70),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: const BorderSide(color: Colors.white70),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: const BorderSide(color: Colors.red),
-                        ),
-                        filled: true,
-                        fillColor: Colors.grey[800],
-                      ),
-                      onChanged: filter,
+                content: SingleChildScrollView(
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      maxHeight: MediaQuery.of(context).size.height *
+                          0.7,
                     ),
-                    const SizedBox(height: 12),
-                    SizedBox(
-                      width: double.maxFinite,
-                      height: 300,
-                      child: ListView.builder(
-                        itemCount: filtered.length,
-                        itemBuilder: (context, index) {
-                          final tz = filtered[index];
-                          return ListTile(
-                            title: Text(
-                              tz.displayName,
-                              style: const TextStyle(color: Colors.white),
+                    child: Column(
+                      mainAxisSize:
+                          MainAxisSize.min,
+                      children: [
+                        TextField(
+                          controller: searchController,
+                          style: const TextStyle(color: Colors.white),
+                          decoration: InputDecoration(
+                            hintText: 'Search timezone...',
+                            hintStyle: const TextStyle(color: Colors.white70),
+                            prefixIcon:
+                                const Icon(Icons.search, color: Colors.white70),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide:
+                                  const BorderSide(color: Colors.white70),
                             ),
-                            onTap: () {
-                              Navigator.pop(context);
-                              setState(() {
-                                _selectedToTimezone = tz;
-                                _convertedTime = '';
-                              });
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide:
+                                  const BorderSide(color: Colors.white70),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: const BorderSide(color: Colors.red),
+                            ),
+                            filled: true,
+                            fillColor: Colors.grey[800],
+                          ),
+                          onChanged: filter,
+                        ),
+                        const SizedBox(height: 12),
+                        Expanded(
+                          child: ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: filtered.length,
+                            itemBuilder: (context, index) {
+                              final tz = filtered[index];
+                              return ListTile(
+                                title: Text(
+                                  tz.displayName,
+                                  style: const TextStyle(color: Colors.white),
+                                ),
+                                onTap: () {
+                                  Navigator.pop(context);
+                                  setState(() {
+                                    _selectedToTimezone = tz;
+                                    _convertedTime = '';
+                                  });
+                                },
+                              );
                             },
-                          );
-                        },
-                      ),
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
               ),
             );
@@ -284,75 +299,75 @@ class TimeConverterScreenState extends State<TimeConverterScreen> {
     );
   }
 
-Widget _buildCircuitDropdown() {
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      const Text(
-        'From Circuit',
-        style: TextStyle(color: Colors.white70),
-      ),
-      const SizedBox(height: 8),
-      DropdownButtonFormField<Circuit>(
-        isExpanded: true,
-        value: _selectedFromCircuit,
-        dropdownColor: Colors.grey[900],
-        style: const TextStyle(color: Colors.white),
-        hint: const Text(
-          'Select a circuit',
+  Widget _buildCircuitDropdown() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'From Circuit',
           style: TextStyle(color: Colors.white70),
         ),
-        icon: const Icon(Icons.arrow_drop_down, color: Colors.white),
-        items: _presenter.circuits.map((circuit) {
-          return DropdownMenuItem<Circuit>(
-            value: circuit,
-            child: Row(
-              children: [
-                Text(
-                  circuit.flagEmoji,
-                  style: const TextStyle(fontSize: 20),
-                ),
-                const SizedBox(width: 12),
-                Flexible(
-                  child: Text(
-                    circuit.name,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(color: Colors.white),
+        const SizedBox(height: 8),
+        DropdownButtonFormField<Circuit>(
+          isExpanded: true,
+          value: _selectedFromCircuit,
+          dropdownColor: Colors.grey[900],
+          style: const TextStyle(color: Colors.white),
+          hint: const Text(
+            'Select a circuit',
+            style: TextStyle(color: Colors.white70),
+          ),
+          icon: const Icon(Icons.arrow_drop_down, color: Colors.white),
+          items: _presenter.circuits.map((circuit) {
+            return DropdownMenuItem<Circuit>(
+              value: circuit,
+              child: Row(
+                children: [
+                  Text(
+                    circuit.flagEmoji,
+                    style: const TextStyle(fontSize: 20),
                   ),
-                ),
-              ],
+                  const SizedBox(width: 12),
+                  Flexible(
+                    child: Text(
+                      circuit.name,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }).toList(),
+          onChanged: (value) {
+            setState(() {
+              _selectedFromCircuit = value;
+              _convertedTime = '';
+            });
+          },
+          decoration: InputDecoration(
+            contentPadding: const EdgeInsets.symmetric(horizontal: 12),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: const BorderSide(color: Colors.white70),
             ),
-          );
-        }).toList(),
-        onChanged: (value) {
-          setState(() {
-            _selectedFromCircuit = value;
-            _convertedTime = '';
-          });
-        },
-        decoration: InputDecoration(
-          contentPadding: const EdgeInsets.symmetric(horizontal: 12),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8),
-            borderSide: const BorderSide(color: Colors.white70),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: const BorderSide(color: Colors.white70),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: const BorderSide(color: Colors.red),
+            ),
+            filled: true,
+            fillColor: Colors.grey[800],
           ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8),
-            borderSide: const BorderSide(color: Colors.white70),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8),
-            borderSide: const BorderSide(color: Colors.red),
-          ),
-          filled: true,
-          fillColor: Colors.grey[800],
         ),
-      ),
-    ],
-  );
-}
+      ],
+    );
+  }
 
-    Widget _buildDateTimePicker() {
+  Widget _buildDateTimePicker() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -371,7 +386,7 @@ Widget _buildCircuitDropdown() {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8),
                 side: BorderSide(
-                  color: _selectedDateTime != null 
+                  color: _selectedDateTime != null
                       ? Colors.red // Red border when selected
                       : Colors.white70, // Default border
                 ),
@@ -381,12 +396,17 @@ Widget _buildCircuitDropdown() {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.calendar_today, size: 20, color: Colors.white,),
+                const Icon(
+                  Icons.calendar_today,
+                  size: 20,
+                  color: Colors.white,
+                ),
                 const SizedBox(width: 8),
                 Text(
                   _selectedDateTime == null
                       ? 'Select Date & Time'
-                      : DateFormat('HH:mm on dd MMM yyyy').format(_selectedDateTime!),
+                      : DateFormat('HH:mm on dd MMM yyyy')
+                          .format(_selectedDateTime!),
                   style: const TextStyle(color: Colors.white70),
                 ),
               ],
@@ -456,7 +476,7 @@ Widget _buildCircuitDropdown() {
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: FutureBuilder<String>(
-          future: _selectedToTimezone != null 
+          future: _selectedToTimezone != null
               ? _presenter.getCurrentTimeInTimezone(_selectedToTimezone!.name)
               : Future.value('Select a timezone to see current time'),
           builder: (context, snapshot) {
@@ -519,7 +539,8 @@ Widget _buildCircuitDropdown() {
     if (date != null) {
       final time = await showTimePicker(
         context: context,
-        initialTime: TimeOfDay.fromDateTime(_selectedDateTime ?? DateTime.now()),
+        initialTime:
+            TimeOfDay.fromDateTime(_selectedDateTime ?? DateTime.now()),
         builder: (context, child) {
           return Theme(
             data: ThemeData.dark().copyWith(
