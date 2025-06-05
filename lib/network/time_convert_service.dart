@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-// Service for handling timezone-related API calls
 class ApiService {
   static const String _baseUrl = 'https://timeapi.io/api/';
   static const String _availableTimezonesEndpoint = 'timezone/availabletimezones';
@@ -9,10 +8,14 @@ class ApiService {
   static const String _currentTimezone = 'Time/current/zone?timeZone=';
   static const Duration _timeoutDuration = Duration(seconds: 10);
 
-  // Fetch all available timezones from the API
+  final http.Client client;
+
+  // Constructor with optional client parameter for dependency injection
+  ApiService({http.Client? client}) : client = client ?? http.Client();
+
   Future<List<String>> getAvailableTimezones() async {
     try {
-      final response = await http.get(
+      final response = await client.get(
         Uri.parse('$_baseUrl$_availableTimezonesEndpoint'),
       ).timeout(_timeoutDuration);
 
@@ -26,14 +29,13 @@ class ApiService {
     }
   }
 
-  /// Converts a datetime from one timezone to another
   Future<Map<String, dynamic>> convertTimezone({
     required String fromTimeZone,
     required String dateTime,
     required String toTimeZone,
   }) async {
     try {
-      final response = await http.post(
+      final response = await client.post(
         Uri.parse('$_baseUrl$_convertTimezoneEndpoint'),
         headers: {'Content-Type': 'application/json'},
         body: json.encode({
@@ -54,10 +56,9 @@ class ApiService {
     }
   }
 
-  /// Gets current time in specified timezone
   Future<Map<String, dynamic>> getCurrentTime(String timezone) async {
     try {
-      final response = await http.get(
+      final response = await client.get(
         Uri.parse('$_baseUrl$_currentTimezone$timezone'),
       ).timeout(_timeoutDuration);
 
