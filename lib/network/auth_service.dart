@@ -9,9 +9,9 @@ class AuthService {
   static const String _userBoxName = 'users';
   final SharedPrefs _sharedPrefs = SharedPrefs();
 
-  final bool disableToast; // 👈 Tambahkan ini
+  final bool disableToast;
 
-  AuthService({this.disableToast = false}); // 👈 Update konstruktor
+  AuthService({this.disableToast = false});
 
   Future<void> init() async {
     await Hive.openBox<UserModel>(_userBoxName);
