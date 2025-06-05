@@ -23,9 +23,9 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     _loadCurrentUser();
     _screens = [
-      _MainMenuContent(),
-      ProfileScreen(onProfileUpdated: _loadCurrentUser),
-      FeedbackScreen(currentUser: _currentUser),
+      _MainMenuContent(key: const Key('main_menu_content')),
+      ProfileScreen(key: const Key('profile_screen'), onProfileUpdated: _loadCurrentUser),
+      FeedbackScreen(key: const Key('feedback_screen'), currentUser: _currentUser),
     ];
   }
 
@@ -34,9 +34,9 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       _currentUser = user;
       _screens = [
-        _MainMenuContent(),
-        ProfileScreen(onProfileUpdated: _loadCurrentUser),
-        FeedbackScreen(currentUser: _currentUser),
+        _MainMenuContent(key: const Key('main_menu_content')),
+        ProfileScreen(key: const Key('profile_screen'), onProfileUpdated: _loadCurrentUser),
+        FeedbackScreen(key: const Key('feedback_screen'), currentUser: _currentUser),
       ];
     });
   }
@@ -44,12 +44,15 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: const Key('home_screen'),
       backgroundColor: Colors.black,
       appBar: AppBar(
+        key: const Key('home_app_bar'),
         backgroundColor: Colors.black,
         elevation: 0,
         actions: [
           IconButton(
+            key: const Key('logout_button'),
             icon: Icon(Icons.logout, color: Colors.white),
             onPressed: () async {
               await _authService.logout();
@@ -60,16 +63,20 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: _currentIndex == 0
           ? ListView(
+              key: const Key('home_list_view'),
               padding: EdgeInsets.all(16),
               children: [
                 Column(
+                  key: const Key('welcome_column'),
                   children: [
                     Image.asset(
+                      key: const Key('logo_image'),
                       'assets/images/logo.png',
                       height: 100,
                       fit: BoxFit.contain,
                     ),
                     Text(
+                      key: const Key('welcome_text'),
                       _currentUser != null
                           ? 'Welcome, ${_currentUser!.fullname}!'
                           : 'Welcome',
@@ -82,11 +89,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     SizedBox(height: 20),
                   ],
                 ),
-                _MainMenuContent(),
+                _MainMenuContent(key: const Key('main_menu_content')),
               ],
             )
           : _screens[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
+        key: const Key('bottom_navigation'),
         backgroundColor: Colors.black,
         selectedItemColor: Colors.red,
         unselectedItemColor: Colors.white70,
@@ -98,14 +106,17 @@ class _HomeScreenState extends State<HomeScreen> {
         },
         items: [
           BottomNavigationBarItem(
+            key: const Key('home_tab'),
             icon: Icon(Icons.home),
             label: 'Home',
           ),
           BottomNavigationBarItem(
+            key: const Key('profile_tab'),
             icon: Icon(Icons.person),
             label: 'Profile',
           ),
           BottomNavigationBarItem(
+            key: const Key('feedback_tab'),
             icon: Icon(Icons.feedback),
             label: 'Feedbacks',
           ),
@@ -116,9 +127,12 @@ class _HomeScreenState extends State<HomeScreen> {
 }
 
 class _MainMenuContent extends StatelessWidget {
+  const _MainMenuContent({super.key});
+
   @override
   Widget build(BuildContext context) {
     return GridView.count(
+      key: const Key('menu_grid'),
       shrinkWrap: true,
       physics: NeverScrollableScrollPhysics(),
       crossAxisCount: 2,
@@ -126,30 +140,35 @@ class _MainMenuContent extends StatelessWidget {
       mainAxisSpacing: 16,
       children: [
         _buildMenuCard(
+          key: const Key('schedule_card'),
           context: context,
           icon: Icons.calendar_month,
           title: 'Schedule',
           onTap: () => Get.toNamed('/schedule'),
         ),
         _buildMenuCard(
+          key: const Key('currency_card'),
           context: context,
           icon: Icons.attach_money,
           title: 'Currency Converter',
           onTap: () => Get.toNamed('/currency'),
         ),
         _buildMenuCard(
+          key: const Key('timezone_card'),
           context: context,
           icon: Icons.access_time,
           title: 'Time Zone Converter',
           onTap: () => Get.toNamed('/time'),
         ),
         _buildMenuCard(
+          key: const Key('map_card'),
           context: context,
           icon: Icons.map,
           title: 'Map',
           onTap: () => Get.toNamed('/map'),
         ),
         _buildMenuCard(
+          key: const Key('compass_card'),
           context: context,
           icon: Icons.explore,
           title: 'Compass',
@@ -160,18 +179,21 @@ class _MainMenuContent extends StatelessWidget {
   }
 
   Widget _buildMenuCard({
+    Key? key,
     required BuildContext context,
     required IconData icon,
     required String title,
     required VoidCallback onTap,
   }) {
     return Card(
+      key: key,
       color: Colors.grey[900],
       elevation: 4,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
       ),
       child: InkWell(
+        key: key != null ? Key('${key}_inkwell') : null,
         onTap: onTap,
         borderRadius: BorderRadius.circular(12),
         child: Column(
