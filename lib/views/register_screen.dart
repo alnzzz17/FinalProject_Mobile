@@ -263,7 +263,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       if (success) {
         Get.snackbar(
           'Success',
-          'Login successful',
+          'Account created successfully',
           backgroundColor: Colors.green,
           colorText: Colors.white,
         );
