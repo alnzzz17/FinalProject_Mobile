@@ -34,25 +34,26 @@ class NotificationService {
 
   // Callback for background tasks
   static void callbackDispatcher() {
-    Workmanager().executeTask((task, inputData) async {
-      final notificationService = NotificationService();
-      await notificationService._showScheduledNotification(
-        id: inputData?['id'] as int,
-        title: inputData?['title'] as String,
-        body: inputData?['body'] as String,
-      );
-      return true;
-    });
-  }
+  Workmanager().executeTask((task, inputData) async {
+    final notificationService = NotificationService();
+    await notificationService._showScheduledNotification(
+      id: inputData?['id'] as int,
+      title: inputData?['title'] as String,
+      body: inputData?['body'] as String,
+      circuitId: inputData?['circuitId'] as String,
+    );
+    return true;
+  });
+}
 
   List<Circuit> circuits = [];
 
-  // Method untuk set circuits
+  // Method for setting circuits
   void setCircuits(List<Circuit> circuits) {
     this.circuits = circuits;
   }
 
-  // Helper method untuk mendapatkan nama circuit
+  // Helper method to get circuit name by ID
   String _getCircuitName(String circuitId) {
     final circuit = circuits.firstWhere(
       (c) => c.id == circuitId,
@@ -84,6 +85,7 @@ class NotificationService {
       title: '1 Day Reminder: ${schedule.name}',
       body: '${schedule.type} at $circuitName starts tomorrow!',
       scheduledDate: raceTime.subtract(const Duration(days: 1)),
+      circuitId: schedule.circuitId,
     );
 
     await _scheduleBackgroundNotification(
@@ -91,6 +93,7 @@ class NotificationService {
       title: '1 Hour Reminder: ${schedule.name}',
       body: '${schedule.type} at $circuitName starts in 1 hour!',
       scheduledDate: raceTime.subtract(const Duration(hours: 1)),
+      circuitId: schedule.circuitId,
     );
 
     await _scheduleBackgroundNotification(
@@ -98,6 +101,7 @@ class NotificationService {
       title: '30 Minutes Reminder: ${schedule.name}',
       body: '${schedule.type} at $circuitName starts in 30 minutes!',
       scheduledDate: raceTime.subtract(const Duration(minutes: 30)),
+      circuitId: schedule.circuitId,
     );
 
     await _scheduleBackgroundNotification(
@@ -105,6 +109,7 @@ class NotificationService {
       title: '15 Minutes Reminder: ${schedule.name}',
       body: '${schedule.type} at $circuitName starts in 15 minutes!',
       scheduledDate: raceTime.subtract(const Duration(minutes: 15)),
+      circuitId: schedule.circuitId,
     );
 
     await _scheduleBackgroundNotification(
@@ -112,6 +117,7 @@ class NotificationService {
       title: '5 Minutes Reminder: ${schedule.name}',
       body: '${schedule.type} at $circuitName starts in 5 minutes!',
       scheduledDate: raceTime.subtract(const Duration(minutes: 5)),
+      circuitId: schedule.circuitId,
     );
 
     await _scheduleBackgroundNotification(
@@ -119,37 +125,39 @@ class NotificationService {
       title: 'Race Reminder: ${schedule.name}',
       body: '${schedule.type} at $circuitName starts in now!',
       scheduledDate: raceTime.subtract(const Duration(minutes: 0)),
+      circuitId: schedule.circuitId,
     );
   }
 
-  Future<void> _scheduleBackgroundNotification({
-    required int id,
-    required String title,
-    required String body,
-    required DateTime scheduledDate,
-  }) async {
-    if (scheduledDate.isBefore(DateTime.now())) return;
+Future<void> _scheduleBackgroundNotification({
+  required int id,
+  required String title,
+  required String body,
+  required DateTime scheduledDate,
+  required String circuitId,
+}) async {
+  if (scheduledDate.isBefore(DateTime.now())) return;
 
-    // Schedule background task using Workmanager
-    await Workmanager().registerOneOffTask(
-      '$id',
-      'show_notification_$id',
-      inputData: {
-        'id': id,
-        'title': title,
-        'body': body,
-      },
-      initialDelay: scheduledDate.difference(DateTime.now()),
-    );
+  await Workmanager().registerOneOffTask(
+    '$id',
+    'show_notification_$id',
+    inputData: {
+      'id': id,
+      'title': title,
+      'body': body,
+      'circuitId': circuitId,
+    },
+    initialDelay: scheduledDate.difference(DateTime.now()),
+  );
 
-    // Schedule local notification as fallback
-    await _scheduleLocalNotification(
-      id: id,
-      title: title,
-      body: body,
-      scheduledDate: scheduledDate,
-    );
-  }
+  await _scheduleLocalNotification(
+    id: id,
+    title: title,
+    body: body,
+    scheduledDate: scheduledDate,
+  );
+}
+  
 Future<void> cancelNotifications(int baseId) async {
   // Cancel all related notifications (baseId + 1 to baseId + 6)
   for (int i = 1; i <= 6; i++) {
@@ -187,26 +195,29 @@ Future<void> cancelNotifications(int baseId) async {
   }
 
   Future<void> _showScheduledNotification({
-    required int id,
-    required String title,
-    required String body,
-  }) async {
-    final androidPlatformChannelSpecifics = AndroidNotificationDetails(
-      'race_reminders',
-      'Race Reminders',
-      importance: Importance.max,
-      priority: Priority.high,
-    );
+  required int id,
+  required String title,
+  required String body,
+  required String circuitId,
+}) async {
+  final circuitName = _getCircuitName(circuitId);
 
-    final platformChannelSpecifics = NotificationDetails(
-      android: androidPlatformChannelSpecifics,
-    );
+  final androidPlatformChannelSpecifics = AndroidNotificationDetails(
+    'race_reminders',
+    'Race Reminders',
+    importance: Importance.max,
+    priority: Priority.high,
+  );
 
-    await _notificationsPlugin.show(
-      id,
-      title,
-      body,
-      platformChannelSpecifics,
-    );
-  }
+  final platformChannelSpecifics = NotificationDetails(
+    android: androidPlatformChannelSpecifics,
+  );
+
+  await _notificationsPlugin.show(
+    id,
+    title,
+    body.replaceAll('Unknown Circuit', circuitName),
+    platformChannelSpecifics,
+  );
+}
 }
