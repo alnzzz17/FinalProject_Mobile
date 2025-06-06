@@ -375,7 +375,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                               children: [
                                 IconButton(
                                   key: Key('edit_feedback_${feedback.id}'),
-                                  icon: const Icon(Icons.edit, color: Colors.blue),
+                                  icon: const Icon(Icons.edit, color: Colors.white),
                                   onPressed: () => _editFeedback(feedback),
                                 ),
                                 IconButton(
