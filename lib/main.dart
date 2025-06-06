@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tpm_fp/models/feedback_model.dart';
 import 'package:tpm_fp/models/schedule_model.dart';
 import 'package:tpm_fp/models/user_model.dart';
@@ -19,31 +20,37 @@ import 'package:tpm_fp/network/auth_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   // Initialize Hive
   await Hive.initFlutter();
   Hive.registerAdapter(UserModelAdapter());
   Hive.registerAdapter(ScheduleAdapter());
   Hive.registerAdapter(FeedbackModelAdapter());
-  
+
   // Initialize services
   final authService = AuthService();
   await authService.init();
-  
+
   // Initialize notifications
   await NotificationService().init();
-  
-  runApp(MyApp());
+
+  // Cek apakah user sudah login
+  final prefs = await SharedPreferences.getInstance();
+  final isLoggedIn = prefs.containsKey('current_username');
+
+  runApp(MyApp(initialRoute: isLoggedIn ? '/home' : '/login'));
 }
 
+
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final String initialRoute;
+  const MyApp({super.key, required this.initialRoute});
 
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
       title: 'MotoTrack',
-      initialRoute: '/login',
+      initialRoute: initialRoute,
       getPages: [
         GetPage(name: '/login', page: () => LoginScreen()),
         GetPage(name: '/register', page: () => RegisterScreen()),

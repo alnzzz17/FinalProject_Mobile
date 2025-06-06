@@ -24,8 +24,11 @@ class _HomeScreenState extends State<HomeScreen> {
     _loadCurrentUser();
     _screens = [
       _MainMenuContent(key: const Key('main_menu_content')),
-      ProfileScreen(key: const Key('profile_screen_home'), onProfileUpdated: _loadCurrentUser),
-      FeedbackScreen(key: const Key('feedback_screen_home'), currentUser: _currentUser),
+      ProfileScreen(
+          key: const Key('profile_screen_home'),
+          onProfileUpdated: _loadCurrentUser),
+      FeedbackScreen(
+          key: const Key('feedback_screen_home'), currentUser: _currentUser),
     ];
   }
 
@@ -35,8 +38,11 @@ class _HomeScreenState extends State<HomeScreen> {
       _currentUser = user;
       _screens = [
         _MainMenuContent(key: const Key('main_menu_content')),
-        ProfileScreen(key: const Key('profile_screen_home'), onProfileUpdated: _loadCurrentUser),
-        FeedbackScreen(key: const Key('feedback_screen_home'), currentUser: _currentUser),
+        ProfileScreen(
+            key: const Key('profile_screen_home'),
+            onProfileUpdated: _loadCurrentUser),
+        FeedbackScreen(
+            key: const Key('feedback_screen_home'), currentUser: _currentUser),
       ];
     });
   }
@@ -55,8 +61,61 @@ class _HomeScreenState extends State<HomeScreen> {
             key: const Key('logout_button'),
             icon: Icon(Icons.logout, color: Colors.white),
             onPressed: () async {
-              await _authService.logout();
-              Get.offAllNamed('/login');
+              final confirm = await showDialog<bool>(
+                context: context,
+                builder: (ctx) => Dialog(
+                  backgroundColor: Colors.grey[900],
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          'Logout',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        SizedBox(height: 16),
+                        Text(
+                          'Are you sure you want to log out?',
+                          style: TextStyle(color: Colors.white70),
+                        ),
+                        SizedBox(height: 24),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(ctx, false),
+                              style: TextButton.styleFrom(
+                                foregroundColor: Colors.white70,
+                              ),
+                              child: Text('Cancel'),
+                            ),
+                            SizedBox(width: 8),
+                            TextButton(
+                              onPressed: () => Navigator.pop(ctx, true),
+                              style: TextButton.styleFrom(
+                                foregroundColor: Colors.red,
+                              ),
+                              child: Text(key: const Key('logout_confirm'), 'Logout'),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+              if (confirm == true) {
+                await _authService.logout();
+                Get.offAllNamed('/login');
+              }
             },
           ),
         ],

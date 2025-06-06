@@ -3,9 +3,11 @@ import 'package:get/get.dart';
 import 'package:tpm_fp/models/feedback_model.dart';
 import 'package:tpm_fp/presenters/feedback_presenter.dart';
 import 'package:tpm_fp/models/user_model.dart';
+import 'package:tpm_fp/network/auth_service.dart';
 
 class FeedbackScreen extends StatefulWidget {
   final UserModel? currentUser;
+
   const FeedbackScreen({super.key, this.currentUser});
 
   @override
@@ -14,14 +16,16 @@ class FeedbackScreen extends StatefulWidget {
 
 class _FeedbackScreenState extends State<FeedbackScreen> {
   final FeedbackPresenter _presenter = FeedbackPresenter();
+  final AuthService _authService = AuthService();
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _contentController = TextEditingController();
+  
   String _selectedType = 'impression';
   List<FeedbackModel> _feedbacks = [];
   bool _isLoading = false;
-
   bool _isEditing = false;
   FeedbackModel? _editingFeedback;
+  UserModel? _currentUser;
 
   Future<void> _editFeedback(FeedbackModel feedback) async {
     setState(() {
@@ -45,7 +49,6 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
     if (_editingFeedback == null) return;
 
     setState(() => _isLoading = true);
-
     try {
       final success = await _presenter.updateFeedback(
         _editingFeedback!,
@@ -80,14 +83,33 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
   @override
   void initState() {
     super.initState();
-    if (widget.currentUser == null) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        Get.offAllNamed('/login');
-      });
+    _initializeUser();
+  }
+
+  Future<void> _initializeUser() async {
+    setState(() => _isLoading = true);
+    
+    // Prioritize widget.currentUser if provided
+    if (widget.currentUser != null) {
+      _currentUser = widget.currentUser;
+      _presenter.setCurrentUser(_currentUser);
+      await _loadFeedbacks();
+      setState(() => _isLoading = false);
       return;
     }
-    _presenter.setCurrentUser(widget.currentUser);
-    _loadFeedbacks();
+    
+    // If not provided, try to get current user from auth service
+    final user = await _authService.getCurrentUserData();
+    if (user == null) {
+      setState(() => _isLoading = false);
+      Get.offAllNamed('/login');
+      return;
+    }
+    
+    _currentUser = user;
+    _presenter.setCurrentUser(_currentUser);
+    await _loadFeedbacks();
+    setState(() => _isLoading = false);
   }
 
   Future<void> _loadFeedbacks() async {
@@ -100,12 +122,16 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
     if (!_formKey.currentState!.validate()) return;
 
     setState(() => _isLoading = true);
-
     try {
-      if (widget.currentUser == null) {
-        // Redirect to login if user is not authenticated
-        Get.offAllNamed('/login');
-        return;
+      if (_currentUser == null) {
+        // Try to get user again if somehow currentUser is null
+        final user = await _authService.getCurrentUserData();
+        if (user == null) {
+          Get.offAllNamed('/login');
+          return;
+        }
+        _currentUser = user;
+        _presenter.setCurrentUser(_currentUser);
       }
 
       await _presenter.addFeedback(
@@ -115,7 +141,6 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
 
       _contentController.clear();
       await _loadFeedbacks();
-
       Get.snackbar(
         'Success',
         'Feedback submitted',
@@ -139,7 +164,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
   Future<void> _deleteFeedback(FeedbackModel feedback) async {
     setState(() => _isLoading = true);
     final success = await _presenter.deleteFeedback(feedback);
-
+    
     if (success) {
       await _loadFeedbacks();
       Get.snackbar(
