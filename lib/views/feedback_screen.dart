@@ -60,6 +60,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
           'Feedback updated',
           backgroundColor: Colors.green,
           colorText: Colors.white,
+          duration: Duration(seconds: 1)
         );
         _cancelEdit();
       }
@@ -69,6 +70,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
         e.toString(),
         backgroundColor: Colors.red,
         colorText: Colors.white,
+        duration: Duration(seconds: 1)
       );
     } finally {
       setState(() => _isLoading = false);
@@ -119,6 +121,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
         'Feedback submitted',
         backgroundColor: Colors.green,
         colorText: Colors.white,
+        duration: Duration(seconds: 1)
       );
     } catch (e) {
       Get.snackbar(
@@ -126,6 +129,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
         e.toString(),
         backgroundColor: Colors.red,
         colorText: Colors.white,
+        duration: Duration(seconds: 1)
       );
     } finally {
       setState(() => _isLoading = false);
@@ -143,6 +147,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
         'Feedback deleted',
         backgroundColor: Colors.green,
         colorText: Colors.white,
+        duration: Duration(seconds: 1)
       );
     } else {
       Get.snackbar(
@@ -150,6 +155,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
         'Failed to delete feedback',
         backgroundColor: Colors.red,
         colorText: Colors.white,
+        duration: Duration(seconds: 1)
       );
     }
     setState(() => _isLoading = false);
@@ -158,11 +164,14 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: const Key('feedback_screen'),
       backgroundColor: Colors.black,
       appBar: AppBar(
+        key: const Key('feedback_app_bar'),
         backgroundColor: Colors.black,
         title: const Text(
           'Feedback',
+          key: Key('feedback_title'),
           style: TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,
@@ -172,10 +181,17 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
         iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: _isLoading && _feedbacks.isEmpty
-          ? const Center(child: CircularProgressIndicator(color: Colors.red))
+          ? const Center(
+              child: CircularProgressIndicator(
+                key: Key('loading_indicator'),
+                color: Colors.red,
+              ),
+            )
           : SingleChildScrollView(
+              key: const Key('feedback_scroll_view'),
               padding: const EdgeInsets.all(16),
               child: Column(
+                key: const Key('feedback_column'),
                 children: [
                   _buildFeedbackForm(),
                   const SizedBox(height: 20),
@@ -188,20 +204,24 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
 
   Widget _buildFeedbackForm() {
     return Card(
+      key: const Key('feedback_form_card'),
       color: Colors.grey[900],
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Form(
           key: _formKey,
           child: Column(
+            key: const Key('feedback_form_column'),
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const Text(
-                'Add Feedback',
+              Text(
+                _isEditing ? 'Edit Feedback' : 'Add Feedback',
+                key: const Key('feedback_form_title'),
                 style: TextStyle(color: Colors.white, fontSize: 18),
               ),
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
+                key: const Key('feedback_type_dropdown'),
                 value: _selectedType,
                 dropdownColor: Colors.grey[900],
                 style: const TextStyle(color: Colors.white),
@@ -213,22 +233,23 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                     borderSide: const BorderSide(color: Colors.white70),
                   ),
                   focusedBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: Colors.red),
-          borderRadius: BorderRadius.circular(8),
-        ),
+                    borderSide: BorderSide(color: Colors.red),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
                   filled: true,
                   fillColor: Colors.grey[800],
                 ),
                 items: const [
                   DropdownMenuItem(
+                    key: Key('feedback_type_impression'),
                     value: 'impression',
                     child: Text('Impression',
                         style: TextStyle(color: Colors.white)),
                   ),
                   DropdownMenuItem(
+                    key: Key('feedback_type_message'),
                     value: 'message',
-                    child:
-                        Text('Message', style: TextStyle(color: Colors.white)),
+                    child: Text('Message', style: TextStyle(color: Colors.white)),
                   ),
                 ],
                 onChanged: (value) {
@@ -239,6 +260,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
               ),
               const SizedBox(height: 16),
               TextFormField(
+                key: const Key('feedback_content_input'),
                 controller: _contentController,
                 maxLines: 5,
                 style: const TextStyle(color: Colors.white),
@@ -266,6 +288,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
               ),
               const SizedBox(height: 16),
               ElevatedButton(
+                key: const Key('feedback_submit_button'),
                 onPressed: _isEditing ? _updateFeedback : _submitFeedback,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.red,
@@ -276,6 +299,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
               ),
               if (_isEditing)
                 TextButton(
+                  key: const Key('feedback_cancel_button'),
                   onPressed: _cancelEdit,
                   child: const Text(
                     'Cancel',
@@ -291,10 +315,12 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
 
   Widget _buildFeedbackList() {
     return Column(
+      key: const Key('feedback_list_column'),
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         const Text(
           'All Feedbacks',
+          key: Key('all_feedbacks_title'),
           style: TextStyle(color: Colors.white, fontSize: 18),
         ),
         const SizedBox(height: 8),
@@ -302,10 +328,12 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
             ? const Center(
                 child: Text(
                   'No feedbacks yet',
+                  key: Key('empty_feedbacks_text'),
                   style: TextStyle(color: Colors.white70),
                 ),
               )
             : ListView.builder(
+                key: const Key('feedbacks_list_view'),
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
                 itemCount: _feedbacks.length,
@@ -315,9 +343,11 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                       widget.currentUser?.username == feedback.username;
 
                   return Card(
+                    key: Key('feedback_card_${feedback.id}'),
                     color: Colors.grey[900],
                     margin: const EdgeInsets.symmetric(vertical: 4),
                     child: ListTile(
+                      key: Key('feedback_item_${feedback.id}'),
                       title: Text(
                         '${feedback.type.toUpperCase()} · ${feedback.fullname}',
                         style: const TextStyle(color: Colors.white),
@@ -344,13 +374,13 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 IconButton(
-                                  icon: const Icon(Icons.edit,
-                                      color: Colors.blue),
+                                  key: Key('edit_feedback_${feedback.id}'),
+                                  icon: const Icon(Icons.edit, color: Colors.blue),
                                   onPressed: () => _editFeedback(feedback),
                                 ),
                                 IconButton(
-                                  icon: const Icon(Icons.delete,
-                                      color: Colors.red),
+                                  key: Key('delete_feedback_${feedback.id}'),
+                                  icon: const Icon(Icons.delete, color: Colors.red),
                                   onPressed: () => _deleteFeedback(feedback),
                                 ),
                               ],

@@ -75,6 +75,7 @@ class _CompassScreenState extends State<CompassScreen> {
         'Failed to initialize compass: $e',
         backgroundColor: Colors.red,
         colorText: Colors.white,
+        duration: Duration(seconds: 1)
         
       );
       setState(() => _isLoading = false);

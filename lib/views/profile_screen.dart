@@ -136,12 +136,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: const Key('profile_screen'),
       backgroundColor: Colors.black,
       appBar: AppBar(
+        key: const Key('profile_app_bar'),
         backgroundColor: Colors.black,
         elevation: 0,
-        title: Text(
+        title: const Text(
           'Profile',
+          key: Key('profile_title'),
           style: TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,
@@ -151,6 +154,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         actions: [
           if (!_isLoading)
             IconButton(
+              key: const Key('edit_profile_button'),
               icon: Icon(
                 _isEditing ? Icons.close : Icons.edit,
                 color: Colors.white,
@@ -162,6 +166,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       body: _isLoading
           ? Center(
               child: CircularProgressIndicator(
+                key: const Key('profile_loading_indicator'),
                 color: Colors.red,
               ),
             )
@@ -169,14 +174,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ? Center(
                   child: Text(
                     'User data not available',
+                    key: const Key('no_user_data_text'),
                     style: TextStyle(color: Colors.white),
                   ),
                 )
               : SingleChildScrollView(
+                  key: const Key('profile_scroll_view'),
                   padding: EdgeInsets.all(16),
                   child: Form(
                     key: _formKey,
                     child: Column(
+                      key: const Key('profile_form_column'),
                       children: [
                         _buildProfilePicture(),
                         SizedBox(height: 20),
@@ -194,6 +202,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         SizedBox(height: 24),
                         if (_isEditing)
                           ElevatedButton(
+                            key: const Key('save_profile_button'),
                             onPressed: _saveProfile,
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.red,
@@ -202,6 +211,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ),
                             child: Text(
                               'Save Changes',
+                              key: const Key('save_profile_button_text'),
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 16,
@@ -218,8 +228,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget _buildProfilePicture() {
     return Center(
       child: Stack(
+        key: const Key('profile_picture_stack'),
         children: [
           Container(
+            key: const Key('profile_picture_container'),
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               border: Border.all(
@@ -228,6 +240,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ),
             child: CircleAvatar(
+              key: const Key('profile_avatar'),
               radius: 60,
               backgroundImage: AssetImage('assets/images/default.png'),
               backgroundColor: Colors.grey[900],
@@ -240,6 +253,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Widget _buildUsernameField() {
     return TextFormField(
+      key: const Key('username_input_field'),
       controller: _usernameController,
       style: TextStyle(color: Colors.white),
       decoration: InputDecoration(
@@ -273,6 +287,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Widget _buildFullnameField() {
     return TextFormField(
+      key: const Key('fullname_input_field'),
       controller: _fullnameController,
       style: TextStyle(color: Colors.white),
       decoration: InputDecoration(
@@ -306,8 +321,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Widget _buildPasswordToggle() {
     return Row(
+      key: const Key('password_toggle_row'),
       children: [
         Checkbox(
+          key: const Key('change_password_checkbox'),
           value: _showPasswordFields,
           onChanged: (value) => _togglePasswordFields(),
           activeColor: Colors.red,
@@ -315,6 +332,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
         Text(
           'Change Password',
+          key: const Key('change_password_text'),
           style: TextStyle(color: Colors.white),
         ),
       ],
@@ -323,6 +341,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Widget _buildPasswordField() {
     return TextFormField(
+      key: const Key('password_input_field'),
       controller: _passwordController,
       style: TextStyle(color: Colors.white),
       cursorColor: Colors.white,
@@ -343,6 +362,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
         prefixIcon: Icon(Icons.lock, color: Colors.white70),
         suffixIcon: IconButton(
+          key: const Key('toggle_password_visibility_button'),
           icon: Icon(
             _obscurePassword ? Icons.visibility : Icons.visibility_off,
             color: Colors.white70,
@@ -371,6 +391,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Widget _buildConfirmPasswordField() {
     return TextFormField(
+      key: const Key('confirm_password_input_field'),
       controller: _confirmPasswordController,
       style: TextStyle(color: Colors.white),
       cursorColor: Colors.white,
@@ -391,6 +412,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
         prefixIcon: Icon(Icons.lock_outline, color: Colors.white70),
         suffixIcon: IconButton(
+          key: const Key('toggle_confirm_password_visibility_button'),
           icon: Icon(
             _obscurePassword ? Icons.visibility : Icons.visibility_off,
             color: Colors.white70,

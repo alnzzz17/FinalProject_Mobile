@@ -24,8 +24,8 @@ class _HomeScreenState extends State<HomeScreen> {
     _loadCurrentUser();
     _screens = [
       _MainMenuContent(key: const Key('main_menu_content')),
-      ProfileScreen(key: const Key('profile_screen'), onProfileUpdated: _loadCurrentUser),
-      FeedbackScreen(key: const Key('feedback_screen'), currentUser: _currentUser),
+      ProfileScreen(key: const Key('profile_screen_home'), onProfileUpdated: _loadCurrentUser),
+      FeedbackScreen(key: const Key('feedback_screen_home'), currentUser: _currentUser),
     ];
   }
 
@@ -35,8 +35,8 @@ class _HomeScreenState extends State<HomeScreen> {
       _currentUser = user;
       _screens = [
         _MainMenuContent(key: const Key('main_menu_content')),
-        ProfileScreen(key: const Key('profile_screen'), onProfileUpdated: _loadCurrentUser),
-        FeedbackScreen(key: const Key('feedback_screen'), currentUser: _currentUser),
+        ProfileScreen(key: const Key('profile_screen_home'), onProfileUpdated: _loadCurrentUser),
+        FeedbackScreen(key: const Key('feedback_screen_home'), currentUser: _currentUser),
       ];
     });
   }
@@ -150,7 +150,7 @@ class _MainMenuContent extends StatelessWidget {
           key: const Key('currency_card'),
           context: context,
           icon: Icons.attach_money,
-          title: 'Currency Converter',
+          title: 'Currency  Converter',
           onTap: () => Get.toNamed('/currency'),
         ),
         _buildMenuCard(

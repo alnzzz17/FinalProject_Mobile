@@ -51,7 +51,8 @@ class _CurrencyScreenState extends State<CurrencyScreen> {
         'Failed to load currencies: $e',
         backgroundColor: Colors.red,
         colorText: Colors.white,
-        snackPosition: SnackPosition.BOTTOM,
+        duration: Duration(seconds: 1)
+        
       );
       setState(() => _currencies = _defaultCurrencies);
     } finally {
@@ -66,7 +67,7 @@ class _CurrencyScreenState extends State<CurrencyScreen> {
         'Please enter an amount',
         backgroundColor: Colors.red,
         colorText: Colors.white,
-        snackPosition: SnackPosition.BOTTOM,
+        duration: Duration(seconds: 1)
       );
       return;
     }
@@ -78,7 +79,7 @@ class _CurrencyScreenState extends State<CurrencyScreen> {
         'Please enter a valid number',
         backgroundColor: Colors.red,
         colorText: Colors.white,
-        snackPosition: SnackPosition.BOTTOM,
+        duration: Duration(seconds: 1)
       );
       return;
     }
@@ -100,7 +101,7 @@ class _CurrencyScreenState extends State<CurrencyScreen> {
         'Failed to convert currency: $e',
         backgroundColor: Colors.red,
         colorText: Colors.white,
-        snackPosition: SnackPosition.BOTTOM,
+        duration: Duration(seconds: 1)
       );
     } finally {
       setState(() => _isLoading = false);
@@ -110,12 +111,15 @@ class _CurrencyScreenState extends State<CurrencyScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: const Key('currency_screen'),
       backgroundColor: Colors.black,
       appBar: AppBar(
+        key: const Key('currency_app_bar'),
         backgroundColor: Colors.black,
         elevation: 0,
         title: const Text(
           'Currency Converter',
+          key: Key('currency_title'),
           style: TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,
@@ -124,10 +128,17 @@ class _CurrencyScreenState extends State<CurrencyScreen> {
         iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: _isLoading && _currencies.isEmpty
-          ? const Center(child: CircularProgressIndicator(color: Colors.red))
+          ? const Center(
+              child: CircularProgressIndicator(
+                key: Key('loading_indicator'),
+                color: Colors.red,
+              ),
+            )
           : SingleChildScrollView(
+              key: const Key('currency_scroll_view'),
               padding: const EdgeInsets.all(16.0),
               child: Column(
+                key: const Key('currency_column'),
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   _buildConverterCard(),
@@ -143,6 +154,7 @@ class _CurrencyScreenState extends State<CurrencyScreen> {
 
   Widget _buildConverterCard() {
     return Card(
+      key: const Key('converter_card'),
       color: Colors.grey[900],
       elevation: 4,
       shape: RoundedRectangleBorder(
@@ -151,6 +163,7 @@ class _CurrencyScreenState extends State<CurrencyScreen> {
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
+          key: const Key('converter_column'),
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             _buildAmountField(),
@@ -160,6 +173,7 @@ class _CurrencyScreenState extends State<CurrencyScreen> {
             _buildCurrencyDropdowns(),
             const SizedBox(height: 16),
             ElevatedButton(
+              key: const Key('convert_button'),
               onPressed: _convertCurrency,
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.red,
@@ -167,9 +181,13 @@ class _CurrencyScreenState extends State<CurrencyScreen> {
                 padding: const EdgeInsets.symmetric(vertical: 16),
               ),
               child: _isLoading
-                  ? const CircularProgressIndicator(color: Colors.white)
+                  ? const CircularProgressIndicator(
+                      key: Key('convert_loading_indicator'),
+                      color: Colors.white,
+                    )
                   : const Text(
                       'CONVERT',
+                      key: Key('convert_button_text'),
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
@@ -184,14 +202,17 @@ class _CurrencyScreenState extends State<CurrencyScreen> {
 
   Widget _buildAmountField() {
     return Column(
+      key: const Key('amount_field_column'),
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text(
           'Amount',
+          key: Key('amount_label'),
           style: TextStyle(color: Colors.white70),
         ),
         const SizedBox(height: 8),
         TextField(
+          key: const Key('amount_input'),
           controller: _amountController,
           keyboardType: TextInputType.numberWithOptions(decimal: true),
           style: const TextStyle(color: Colors.white),
@@ -226,6 +247,7 @@ class _CurrencyScreenState extends State<CurrencyScreen> {
             padding: const EdgeInsets.only(top: 4.0),
             child: Text(
               '${_amountController.text.length}/$_maxInputLength characters',
+              key: Key('character_count_text'),
               style: TextStyle(
                 color: _amountController.text.length == _maxInputLength
                     ? Colors.red
@@ -241,14 +263,17 @@ class _CurrencyScreenState extends State<CurrencyScreen> {
 
   Widget _buildCircuitDropdown() {
     return Column(
+      key: const Key('circuit_dropdown_column'),
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text(
           'Circuit Location',
+          key: Key('circuit_label'),
           style: TextStyle(color: Colors.white70),
         ),
         const SizedBox(height: 8),
         DropdownButtonFormField<Circuit>(
+          key: const Key('circuit_dropdown'),
           isExpanded: true,
           value: _selectedCircuit,
           dropdownColor: Colors.grey[900],
@@ -276,6 +301,7 @@ class _CurrencyScreenState extends State<CurrencyScreen> {
           ),
           items: _circuits.map((circuit) {
             return DropdownMenuItem<Circuit>(
+              key: Key('circuit_${circuit.id}'),
               value: circuit,
               child: Row(
                 children: [
@@ -312,22 +338,27 @@ class _CurrencyScreenState extends State<CurrencyScreen> {
 
   Widget _buildCurrencyDropdowns() {
     return Row(
+      key: const Key('currency_dropdowns_row'),
       children: [
         Expanded(
           child: Column(
+            key: const Key('from_currency_column'),
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text(
                 'From Currency',
+                key: Key('from_currency_label'),
                 style: TextStyle(color: Colors.white70),
               ),
               const SizedBox(height: 8),
               DropdownButtonFormField<String>(
+                key: const Key('from_currency_dropdown'),
                 value: _selectedFromCurrency,
                 dropdownColor: Colors.grey[900],
                 style: const TextStyle(color: Colors.white),
                 items: _currencies
                     .map((currency) => DropdownMenuItem(
+                          key: Key('from_currency_$currency'),
                           value: currency,
                           child: Text(
                             currency,
@@ -361,6 +392,7 @@ class _CurrencyScreenState extends State<CurrencyScreen> {
         ),
         const SizedBox(width: 10),
         IconButton(
+          key: const Key('swap_currency_button'),
           icon: const Icon(Icons.swap_horiz, color: Colors.white),
           onPressed: () {
             if (_selectedCircuit != null) {
@@ -375,20 +407,24 @@ class _CurrencyScreenState extends State<CurrencyScreen> {
         const SizedBox(width: 10),
         Expanded(
           child: Column(
+            key: const Key('to_currency_column'),
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text(
                 'To Currency',
+                key: Key('to_currency_label'),
                 style: TextStyle(color: Colors.white70),
               ),
               const SizedBox(height: 8),
               DropdownButtonFormField<String>(
+                key: const Key('to_currency_dropdown'),
                 value: _selectedToCurrency,
                 dropdownColor: Colors.grey[900],
                 style: const TextStyle(color: Colors.white),
                 items: _presenter
                     .getCircuitCurrencies()
                     .map((currency) => DropdownMenuItem(
+                          key: Key('to_currency_$currency'),
                           value: currency,
                           child: Text(
                             currency,
@@ -426,6 +462,7 @@ class _CurrencyScreenState extends State<CurrencyScreen> {
 
   Widget _buildResultCard() {
     return Card(
+      key: const Key('result_card'),
       color: Colors.grey[900],
       elevation: 4,
       shape: RoundedRectangleBorder(
@@ -434,9 +471,11 @@ class _CurrencyScreenState extends State<CurrencyScreen> {
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
+          key: const Key('result_column'),
           children: [
             Text(
               '${_amountController.text} $_selectedFromCurrency =',
+              key: Key('conversion_text'),
               style: const TextStyle(
                 fontSize: 18,
                 color: Colors.white,
@@ -444,6 +483,7 @@ class _CurrencyScreenState extends State<CurrencyScreen> {
             ),
             Text(
               '${_convertedAmount.toStringAsFixed(2)} $_selectedToCurrency',
+              key: Key('result_text'),
               style: const TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
@@ -453,6 +493,7 @@ class _CurrencyScreenState extends State<CurrencyScreen> {
             const SizedBox(height: 10),
             Text(
               '1 $_selectedFromCurrency = ${_conversionRate.toStringAsFixed(6)} $_selectedToCurrency',
+              key: Key('rate_text'),
               style: const TextStyle(
                 fontSize: 14,
                 color: Colors.white70,
@@ -463,6 +504,7 @@ class _CurrencyScreenState extends State<CurrencyScreen> {
                 padding: const EdgeInsets.only(top: 10),
                 child: Text(
                   'Currency for ${_selectedCircuit!.location}',
+                  key: Key('circuit_location_text'),
                   style: const TextStyle(
                     color: Colors.white70,
                     fontStyle: FontStyle.italic,
