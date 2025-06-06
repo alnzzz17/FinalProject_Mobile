@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:tpm_fp/models/schedule_model.dart';
+import 'package:tpm_fp/network/notification_service.dart';
 import 'package:tpm_fp/presenters/schedule_presenter.dart';
 
 class ScheduleScreen extends StatefulWidget {
@@ -27,6 +28,7 @@ class ScheduleScreenState extends State<ScheduleScreen> {
   void initState() {
     super.initState();
     _initialize();
+    NotificationService().setCircuits(_presenter.getCircuits());
   }
 
   Future<void> _initialize() async {
