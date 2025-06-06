@@ -7,7 +7,8 @@ import 'package:tpm_fp/main.dart' as app;
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
-  testWidgets('Register and Login flow integration test',(WidgetTester tester) async {
+  testWidgets('Register and Login flow integration test',
+      (WidgetTester tester) async {
     app.main();
     await tester.pumpAndSettle();
     await Future.delayed(const Duration(seconds: 1));
@@ -24,10 +25,13 @@ void main() {
 
     // Register a new account
     final testUsername = 'testuser_${DateTime.now().millisecondsSinceEpoch}';
-    await tester.enterText(find.byKey(const Key('username-field')), testUsername);
-    await tester.enterText(find.byKey(const Key('fullname-field')), 'Test User');
+    await tester.enterText(
+        find.byKey(const Key('username-field')), testUsername);
+    await tester.enterText(
+        find.byKey(const Key('fullname-field')), 'Test User');
     await tester.enterText(find.byKey(const Key('password-field')), '123456');
-    await tester.enterText(find.byKey(const Key('confirm-password-field')), '123456');
+    await tester.enterText(
+        find.byKey(const Key('confirm-password-field')), '123456');
 
     await tester.sendKeyEvent(LogicalKeyboardKey.escape);
     await tester.pumpAndSettle();
@@ -43,7 +47,8 @@ void main() {
     expect(find.byKey(const Key('login-title')), findsOneWidget);
 
     // Fill in login credentials
-    await tester.enterText(find.byKey(const Key('username-field')), testUsername);
+    await tester.enterText(
+        find.byKey(const Key('username-field')), testUsername);
     await tester.enterText(find.byKey(const Key('password-field')), '123456');
     await tester.tap(find.byKey(const Key('login-button')));
     await tester.pumpAndSettle(const Duration(seconds: 3));
@@ -56,8 +61,31 @@ void main() {
     final savedUsername = prefs.getString('current_username');
     expect(savedUsername, equals(testUsername));
 
-        // Logout
+    // Logout
     await tester.tap(find.byKey(const Key('logout_button')));
+    await tester.pumpAndSettle(const Duration(seconds: 3));
+
+    expect(find.text('Are you sure you want to log out?'), findsOneWidget);
+    expect(find.text('Cancel'), findsOneWidget);
+    expect(find.text('Logout'), findsNWidgets(2)); 
+
+// Test 2: Cancel logout
+    await tester.tap(find.text('Cancel'));
+    await tester.pumpAndSettle(Duration(seconds: 2));
+
+// Verifikasi dialog tertutup dan masih di HomeScreen
+    expect(find.text('Logout'), findsNothing); // Dialog sudah tertutup
+    expect(find.byKey(const Key('home_screen')), findsWidgets); // Masih di home
+
+// Test 3: Konfirmasi logout
+    await tester.tap(find.byKey(const Key('logout_button')));
+    await tester.pumpAndSettle();
+
+// Verifikasi dialog muncul lagi
+    expect(find.text('Logout'), findsNWidgets(2));
+
+// Tekan tombol Logout di dialog
+    await tester.tap(find.byKey(const Key('logout_confirm')));
     await tester.pumpAndSettle(const Duration(seconds: 3));
 
     // Verify back to login screen

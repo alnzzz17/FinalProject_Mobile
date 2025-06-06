@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:tpm_fp/models/data/feedback_default.dart';
 import 'package:tpm_fp/models/feedback_model.dart';
 import 'package:tpm_fp/presenters/feedback_presenter.dart';
 import 'package:tpm_fp/models/user_model.dart';
@@ -19,7 +20,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
   final AuthService _authService = AuthService();
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _contentController = TextEditingController();
-  
+
   String _selectedType = 'impression';
   List<FeedbackModel> _feedbacks = [];
   bool _isLoading = false;
@@ -58,23 +59,17 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
       if (success) {
         _contentController.clear();
         await _loadFeedbacks();
-        Get.snackbar(
-          'Success',
-          'Feedback updated',
-          backgroundColor: Colors.green,
-          colorText: Colors.white,
-          duration: Duration(seconds: 1)
-        );
+        Get.snackbar('Success', 'Feedback updated',
+            backgroundColor: Colors.green,
+            colorText: Colors.white,
+            duration: Duration(seconds: 1));
         _cancelEdit();
       }
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        e.toString(),
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-        duration: Duration(seconds: 1)
-      );
+      Get.snackbar('Error', e.toString(),
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+          duration: Duration(seconds: 1));
     } finally {
       setState(() => _isLoading = false);
     }
@@ -88,7 +83,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
 
   Future<void> _initializeUser() async {
     setState(() => _isLoading = true);
-    
+
     // Prioritize widget.currentUser if provided
     if (widget.currentUser != null) {
       _currentUser = widget.currentUser;
@@ -97,7 +92,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
       setState(() => _isLoading = false);
       return;
     }
-    
+
     // If not provided, try to get current user from auth service
     final user = await _authService.getCurrentUserData();
     if (user == null) {
@@ -105,7 +100,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
       Get.offAllNamed('/login');
       return;
     }
-    
+
     _currentUser = user;
     _presenter.setCurrentUser(_currentUser);
     await _loadFeedbacks();
@@ -114,8 +109,18 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
 
   Future<void> _loadFeedbacks() async {
     setState(() => _isLoading = true);
-    _feedbacks = await _presenter.getAllFeedbacks();
-    setState(() => _isLoading = false);
+
+    // Get feedbacks from database
+    final dbFeedbacks = await _presenter.getAllFeedbacks();
+
+    // Combine with default feedbacks
+    setState(() {
+      _feedbacks = [
+        ...FeedbackData.defaultFeedbacks,
+        ...dbFeedbacks,
+      ];
+      _isLoading = false;
+    });
   }
 
   Future<void> _submitFeedback() async {
@@ -141,21 +146,15 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
 
       _contentController.clear();
       await _loadFeedbacks();
-      Get.snackbar(
-        'Success',
-        'Feedback submitted',
-        backgroundColor: Colors.green,
-        colorText: Colors.white,
-        duration: Duration(seconds: 1)
-      );
+      Get.snackbar('Success', 'Feedback submitted',
+          backgroundColor: Colors.green,
+          colorText: Colors.white,
+          duration: Duration(seconds: 1));
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        e.toString(),
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-        duration: Duration(seconds: 1)
-      );
+      Get.snackbar('Error', e.toString(),
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+          duration: Duration(seconds: 1));
     } finally {
       setState(() => _isLoading = false);
     }
@@ -164,24 +163,18 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
   Future<void> _deleteFeedback(FeedbackModel feedback) async {
     setState(() => _isLoading = true);
     final success = await _presenter.deleteFeedback(feedback);
-    
+
     if (success) {
       await _loadFeedbacks();
-      Get.snackbar(
-        'Success',
-        'Feedback deleted',
-        backgroundColor: Colors.green,
-        colorText: Colors.white,
-        duration: Duration(seconds: 1)
-      );
+      Get.snackbar('Success', 'Feedback deleted',
+          backgroundColor: Colors.green,
+          colorText: Colors.white,
+          duration: Duration(seconds: 1));
     } else {
-      Get.snackbar(
-        'Error',
-        'Failed to delete feedback',
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-        duration: Duration(seconds: 1)
-      );
+      Get.snackbar('Error', 'Failed to delete feedback',
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+          duration: Duration(seconds: 1));
     }
     setState(() => _isLoading = false);
   }
@@ -274,7 +267,8 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                   DropdownMenuItem(
                     key: Key('feedback_type_message'),
                     value: 'message',
-                    child: Text('Message', style: TextStyle(color: Colors.white)),
+                    child:
+                        Text('Message', style: TextStyle(color: Colors.white)),
                   ),
                 ],
                 onChanged: (value) {
@@ -400,12 +394,14 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                               children: [
                                 IconButton(
                                   key: Key('edit_feedback_${feedback.id}'),
-                                  icon: const Icon(Icons.edit, color: Colors.white),
+                                  icon: const Icon(Icons.edit,
+                                      color: Colors.white),
                                   onPressed: () => _editFeedback(feedback),
                                 ),
                                 IconButton(
                                   key: Key('delete_feedback_${feedback.id}'),
-                                  icon: const Icon(Icons.delete, color: Colors.red),
+                                  icon: const Icon(Icons.delete,
+                                      color: Colors.red),
                                   onPressed: () => _deleteFeedback(feedback),
                                 ),
                               ],
