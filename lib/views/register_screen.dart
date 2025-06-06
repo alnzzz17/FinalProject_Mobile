@@ -261,6 +261,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
       );
       setState(() => _isLoading = false);
       if (success) {
+        Get.snackbar(
+          'Success',
+          'Login successful',
+          backgroundColor: Colors.green,
+          colorText: Colors.white,
+        );
+        await Future.delayed(Duration(milliseconds: 1000));
         Get.offAllNamed('/login');
       }
     }
