@@ -67,24 +67,24 @@ void main() {
 
     expect(find.text('Are you sure you want to log out?'), findsOneWidget);
     expect(find.text('Cancel'), findsOneWidget);
-    expect(find.text('Logout'), findsNWidgets(2)); 
+    expect(find.text('Logout'), findsNWidgets(2));
 
-// Test 2: Cancel logout
+    // Test 2: Cancel logout
     await tester.tap(find.text('Cancel'));
     await tester.pumpAndSettle(Duration(seconds: 2));
 
-// Verifikasi dialog tertutup dan masih di HomeScreen
-    expect(find.text('Logout'), findsNothing); // Dialog sudah tertutup
-    expect(find.byKey(const Key('home_screen')), findsWidgets); // Masih di home
+    // Check if the dialog is closed and still in the home page
+    expect(find.text('Logout'), findsNothing);
+    expect(find.byKey(const Key('home_screen')), findsWidgets);
 
-// Test 3: Konfirmasi logout
+    // Test 3: Logout confirmation
     await tester.tap(find.byKey(const Key('logout_button')));
     await tester.pumpAndSettle();
 
-// Verifikasi dialog muncul lagi
+    // Check if the logout confirmation dialog appears
     expect(find.text('Logout'), findsNWidgets(2));
 
-// Tekan tombol Logout di dialog
+    // Press the logout button in the dialog
     await tester.tap(find.byKey(const Key('logout_confirm')));
     await tester.pumpAndSettle(const Duration(seconds: 3));
 
