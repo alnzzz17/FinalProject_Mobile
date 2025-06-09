@@ -1,3 +1,4 @@
 {
-    "cmake.sourceDirectory": "C:/Users/ACER/OneDrive/Documents/PUNYA LYTA/Mobile/tpm_fp/linux"
+    "cmake.sourceDirectory": "C:/Users/ACER/OneDrive/Documents/PUNYA LYTA/Mobile/tpm_fp/",
+    "C_Cpp.errorSquiggles": "enabled"
 }
