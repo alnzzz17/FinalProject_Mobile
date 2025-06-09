@@ -6,16 +6,16 @@ import 'package:tpm_fp/network/schedule_service.dart';
 import 'package:tpm_fp/models/data/circuit_data.dart';
 
 class SchedulePresenter {
-  final ScheduleService _service = ScheduleService();
-  final NotificationService _notificationService = NotificationService();
+  ScheduleService service = ScheduleService();
+  NotificationService notificationService = NotificationService();
 
   Future<void> init() async {
-    await _service.init();
-    await _notificationService.init();
+    await service.init();
+    await notificationService.init();
   }
 
   Future<List<Schedule>> getSchedules() async {
-    return await _service.getAllSchedules();
+    return await service.getAllSchedules();
   }
 
   Future<void> saveSchedule({
@@ -35,10 +35,10 @@ class SchedulePresenter {
       createdAt: DateTime.now(),
     );
 
-    await _service.saveSchedule(newSchedule);
+    await service.saveSchedule(newSchedule);
 
     if (notificationEnabled) {
-      await _notificationService.scheduleRaceNotifications(newSchedule);
+      await notificationService.scheduleRaceNotifications(newSchedule);
     }
   }
 
@@ -60,17 +60,17 @@ class SchedulePresenter {
       createdAt: DateTime.now(),
     );
 
-    await _notificationService.cancelNotifications(id.hashCode);
-    await _service.saveSchedule(updatedSchedule);
+    await notificationService.cancelNotifications(id.hashCode);
+    await service.saveSchedule(updatedSchedule);
 
     if (notificationEnabled) {
-      await _notificationService.scheduleRaceNotifications(updatedSchedule);
+      await notificationService.scheduleRaceNotifications(updatedSchedule);
     }
   }
 
   Future<void> deleteSchedule(String id) async {
-    await _notificationService.cancelNotifications(id.hashCode);
-    await _service.deleteSchedule(id);
+    await notificationService.cancelNotifications(id.hashCode);
+    await service.deleteSchedule(id);
   }
 
   List<Circuit> getCircuits() {
@@ -78,7 +78,7 @@ class SchedulePresenter {
   }
 
   List<String> getScheduleTypes() {
-    return _service.getScheduleTypes();
+    return service.getScheduleTypes();
   }
 
   Circuit? getCircuitById(String circuitId) {
