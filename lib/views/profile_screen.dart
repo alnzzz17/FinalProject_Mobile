@@ -24,6 +24,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   bool _isEditing = false;
   bool _showPasswordFields = false;
   bool _obscurePassword = true;
+  bool _obscureConfirmPassword = true;
 
   @override
   void initState() {
@@ -414,17 +415,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
         suffixIcon: IconButton(
           key: const Key('toggle_confirm_password_visibility_button'),
           icon: Icon(
-            _obscurePassword ? Icons.visibility : Icons.visibility_off,
+            _obscureConfirmPassword  ? Icons.visibility : Icons.visibility_off,
             color: Colors.white70,
           ),
           onPressed: () {
-            setState(() => _obscurePassword = !_obscurePassword);
+            setState(() => _obscureConfirmPassword = !_obscureConfirmPassword);
           },
         ),
         filled: true,
         fillColor: Colors.grey[900],
       ),
-      obscureText: true,
+      obscureText: _obscureConfirmPassword,
       validator: _showPasswordFields
           ? (value) {
               if (value != _passwordController.text) {
