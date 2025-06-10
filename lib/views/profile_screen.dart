@@ -257,6 +257,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       key: const Key('username_input_field'),
       controller: _usernameController,
       style: TextStyle(color: Colors.white),
+      cursorColor: Colors.white,
       decoration: InputDecoration(
         labelText: 'Username',
         labelStyle: TextStyle(color: Colors.white70),
@@ -291,6 +292,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       key: const Key('fullname_input_field'),
       controller: _fullnameController,
       style: TextStyle(color: Colors.white),
+      cursorColor: Colors.white,
       decoration: InputDecoration(
         labelText: 'Fullname',
         labelStyle: TextStyle(color: Colors.white70),

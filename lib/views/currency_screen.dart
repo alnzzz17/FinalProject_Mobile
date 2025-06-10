@@ -216,6 +216,7 @@ class _CurrencyScreenState extends State<CurrencyScreen> {
           controller: _amountController,
           keyboardType: TextInputType.numberWithOptions(decimal: true),
           style: const TextStyle(color: Colors.white),
+          cursorColor: Colors.white,
           decoration: InputDecoration(
             contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
             hintText: 'Enter amount to convert',
